@@ -1,6 +1,6 @@
 # MANNEQUIN
 
-A minimalist, high-fashion e-commerce concept built with the MERN stack.
+minimalist
 
 ## Tech Stack
 - **Frontend**: React, Vite
