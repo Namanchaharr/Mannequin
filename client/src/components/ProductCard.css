@@ -1,0 +1,73 @@
+.product-card {
+  height: 100vh;
+  /* Fallback */
+  height: 100dvh;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.product-info {
+  background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 30%, rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0.15) 85%, transparent 100%);
+  padding: 2rem;
+  padding-bottom: 4rem;
+  /* Extra space for bottom safe area */
+  color: white;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+.product-card.expanded .product-info {
+  opacity: 1;
+}
+
+.product-desc {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.6;
+  margin-top: 1rem;
+  opacity: 0;
+}
+
+.product-card.expanded .product-desc {
+  animation: fadeIn 2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  animation-delay: 0.5s;
+  /* Slight delay after gradient start */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+.product-name {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.product-price {
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  margin: 0.5rem 0 0 0;
+  opacity: 0.8;
+}
