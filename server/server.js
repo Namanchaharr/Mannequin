@@ -27,6 +27,31 @@ app.get('/', (req, res) => {
     res.send('Mannequin API is running');
 });
 
+// Redirect Route (High Speed)
+const Redirect = require('./models/Redirect');
+
+app.get('/:code', async (req, res) => {
+    try {
+        const { code } = req.params;
+        // Skip favicon or static assets if not handled
+        if (code === 'favicon.ico') return res.status(404).end();
+
+        const redirect = await Redirect.findOne({ code });
+        if (redirect) {
+            redirect.clicks++;
+            await redirect.save();
+            return res.redirect(301, redirect.destination);
+        }
+
+        // If no redirect found, maybe it's a 404 or just pass through for SPA? 
+        // For now, simple 404
+        res.status(404).json({ msg: 'Link not found' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
