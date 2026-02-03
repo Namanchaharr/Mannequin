@@ -1,30 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import ProductCard from '../components/ProductCard';
+import { mockProducts } from '../data/products';
 
 const Home = ({ expandedId, setExpandedId, onScrollChange }) => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/products')
-            .then(res => setProducts(res.data))
-            .catch(err => console.error(err));
+        // Use mock data for static deployment
+        setProducts(mockProducts);
     }, []);
 
     const handleScroll = (e) => {
         const scrollTop = e.target.scrollTop;
         const viewportHeight = e.target.clientHeight;
 
-        // "As soon as i scroll make the text and icons disappear" - Close expanded state
-        // We use a small threshold to avoid accidental jitters, e.g., 10px
-        if (expandedId && Math.abs(scrollTop - (products.find(p => p.id === expandedId)?.index || 0) * viewportHeight) > 50) {
-            // Logic to close is tricky if we don't track scroll start. 
-            // simpler: If expandedId is set, any scroll event > threshold closes it.
-            // But handleScroll fires constantly.
-            // Better: just setExpandedId(null) if expandedId is true.
-            setExpandedId(null);
-        } else if (expandedId) {
-            // If we just mapped keys/indexes we could be smarter, but let's stick to the "Action" -> "Scroll" -> "Reset" flow.
+        // Close expanded state on scroll
+        if (expandedId) {
             setExpandedId(null);
         }
 
