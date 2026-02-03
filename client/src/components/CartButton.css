@@ -1,0 +1,79 @@
+/* Base State (Hidden/Circle) */
+.cart-button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+
+    /* Layout & Shape */
+    width: 32px;
+    /* Start as Circle */
+    height: 32px;
+    border-radius: 16px;
+    padding: 0;
+    /* No padding, rely on width */
+    background-color: #eaeaea;
+    border: none;
+
+    /* Centering */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    /* Crucial for calc */
+
+    /* Interaction */
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    pointer-events: none;
+    /* Inactive when hidden */
+
+    /* Initial Transform state */
+    transform: scale(0.9);
+    opacity: 0;
+
+    /* EXIT TRANSITION: Active -> Hidden */
+    /* Target: ~1.0s total meaningful exit */
+    /* 1. Shrink Width (1.0s) - Syncs with scroll trail */
+    /* 2. Fade Out (0.5s) starts after 0.5s */
+    transition:
+        width 1.0s cubic-bezier(0.25, 1, 0.5, 1),
+        opacity 0.5s ease 0.5s,
+        transform 0.5s ease 0.5s;
+}
+
+/* Active State (Visible/Pill) */
+.cart-button.visible {
+    width: 90px;
+    /* Expanded Width (approx 2.5rem padding equivalent) */
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+
+    /* ENTER TRANSITION: Hidden -> Active */
+    /* 1. Fade/Scale In (1.5s) */
+    /* 2. Expand Width (1.5s) */
+    /* Everything breathes together slowly */
+    transition:
+        opacity 1.5s ease,
+        transform 1.5s ease,
+        width 2s cubic-bezier(0.22, 1, 0.36, 1);
+    /* Long, luxurious expansion */
+}
+
+.cart-button:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 6px 25px rgba(255, 255, 255, 0.5);
+}
+
+.cart-button:active {
+    transform: scale(0.95) !important;
+}
+
+/* Ensure SVG strokes are crisp and icon is smaller */
+.cart-button svg {
+    stroke: black;
+    height: 14px;
+    width: 14px;
+    /* Icon remains centered by Flexbox */
+}

@@ -1,21 +1,16 @@
 import React, { useState } from 'react';
 import './ProductCard.css';
 
-const ProductCard = ({ product, onInteract }) => {
-    const [expanded, setExpanded] = useState(false);
-
+const ProductCard = ({ product, isExpanded, onToggle }) => {
     return (
         <div
-            className={`product-card ${expanded ? 'expanded' : ''}`}
+            className={`product-card ${isExpanded ? 'expanded' : ''}`}
             style={{ backgroundImage: `url(${product.image})` }}
-            onClick={() => {
-                setExpanded(!expanded);
-                if (onInteract) onInteract();
-            }}
+            onClick={onToggle}
         >
             <div className="product-info">
                 <h2 className="product-name">{product.name}</h2>
-                {expanded && <p className="product-desc">{product.description}</p>}
+                {isExpanded && <p className="product-desc">{product.description}</p>}
             </div>
         </div>
     );

@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
+import CartButton from './components/CartButton';
 import './App.css';
 
 function App() {
-  const [uiVisible, setUiVisible] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
+  const [showTitle, setShowTitle] = useState(true);
 
   return (
     <div className="App">
-      <Navbar visible={uiVisible} />
-      <Home onInteract={() => setUiVisible(true)} />
+      <Navbar showIcon={!!expandedId} showTitle={showTitle} />
+      <CartButton visible={!!expandedId} />
+      <Home
+        expandedId={expandedId}
+        setExpandedId={setExpandedId}
+        onScrollChange={(shouldShow) => setShowTitle(shouldShow)}
+      />
     </div>
   );
 }
