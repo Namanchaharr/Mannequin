@@ -6,7 +6,7 @@ const Home = ({ expandedId, setExpandedId, onScrollChange }) => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/products')
+        axios.get('http://localhost:8080/api/products')
             .then(res => setProducts(res.data))
             .catch(err => console.error(err));
     }, []);
@@ -17,7 +17,7 @@ const Home = ({ expandedId, setExpandedId, onScrollChange }) => {
 
         // "As soon as i scroll make the text and icons disappear" - Close expanded state
         // We use a small threshold to avoid accidental jitters, e.g., 10px
-        if (expandedId && Math.abs(scrollTop - (products.find(p => p._id === expandedId)?.index || 0) * viewportHeight) > 50) {
+        if (expandedId && Math.abs(scrollTop - (products.find(p => p.id === expandedId)?.index || 0) * viewportHeight) > 50) {
             // Logic to close is tricky if we don't track scroll start. 
             // simpler: If expandedId is set, any scroll event > threshold closes it.
             // But handleScroll fires constantly.
@@ -47,10 +47,10 @@ const Home = ({ expandedId, setExpandedId, onScrollChange }) => {
         >
             {products.map(product => (
                 <ProductCard
-                    key={product._id}
+                    key={product.id}
                     product={product}
-                    isExpanded={expandedId === product._id}
-                    onToggle={() => setExpandedId(expandedId === product._id ? null : product._id)}
+                    isExpanded={expandedId === product.id}
+                    onToggle={() => setExpandedId(expandedId === product.id ? null : product.id)}
                 />
             ))}
         </div>

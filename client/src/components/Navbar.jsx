@@ -1,11 +1,32 @@
 import React from 'react';
 import './Navbar.css';
 
-const Navbar = ({ showIcon, showTitle }) => {
+const Navbar = ({ showIcon, showTitle, onProfileClick, isAuthenticated }) => {
     return (
-        <nav className="navbar">
-            <div className="nav-left">
-                {/* Simple SVG Profile Icon */}
+        <>
+            <nav className="navbar">
+                <div className="nav-left">
+                    {/* Empty for balance */}
+                </div>
+                <div className="nav-center">
+                    <h1
+                        className="nav-title"
+                        style={{
+                            opacity: showTitle ? 1 : 0,
+                            transition: 'opacity 2s ease'
+                        }}
+                    >MANNEQUIN</h1>
+                </div>
+                <div className="nav-right">
+                    {/* Empty for balance */}
+                </div>
+            </nav>
+            {/* Profile Icon - Fixed Bottom Left */}
+            <div
+                className="profile-icon"
+                onClick={onProfileClick}
+                title={isAuthenticated ? "Sign out" : "Sign in"}
+            >
                 <svg
                     width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                     style={{
@@ -17,20 +38,9 @@ const Navbar = ({ showIcon, showTitle }) => {
                     <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
             </div>
-            <div className="nav-center">
-                <h1
-                    className="nav-title"
-                    style={{
-                        opacity: showTitle ? 1 : 0,
-                        transition: 'opacity 2s ease'
-                    }}
-                >MANNEQUIN</h1>
-            </div>
-            <div className="nav-right">
-                {/* Empty for balance or future updates */}
-            </div>
-        </nav>
+        </>
     );
 };
 
 export default Navbar;
+

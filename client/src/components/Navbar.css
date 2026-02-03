@@ -37,8 +37,18 @@
     margin: 0;
 }
 
-/* Ensure SVG strokes are white */
-.nav-left svg {
+/* Profile Icon - Fixed Bottom Left */
+.profile-icon {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-icon svg {
     stroke: white;
     cursor: pointer;
 }

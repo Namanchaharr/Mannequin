@@ -1,52 +1,54 @@
-# MANNEQUIN
+# Mannequin
 
-minimalist
+A minimalist 3D mannequin product showcase.
 
 ## Tech Stack
 - **Frontend**: React, Vite
-- **Backend**: Node.js, Express, MongoDB
-- **Styling**: Vanilla CSS (Custom Graphics & Animations)
+- **Backend**: Go, Gorilla Mux
+- **Database**: PostgreSQL
+- **Infrastructure**: Docker Compose
 
-## Features
-- Full-screen, mobile-first product carousel.
-- "Plain Black 3D Mannequin" aesthetic.
-- Interactive "Reveal" UI: Click products to see details and profile controls.
-- Smooth cinematic transitions and gradients.
+## Quick Start (Pre-requisite: Docker)
 
-## Getting Started
+1.  **Clone and Start**
+    ```bash
+    git clone https://github.com/Namanchaharr/mannequin.git
+    cd mannequin
+    docker-compose up --build
+    ```
+
+    *This starts PostgreSQL, Go API server, and React frontend.*
+
+2.  **View Access**
+    - **Frontend**: [http://localhost:5173](http://localhost:5173)
+    - **API**: [http://localhost:8080](http://localhost:8080)
+    - **Products Endpoint**: [http://localhost:8080/api/products](http://localhost:8080/api/products)
+
+## Manual Setup (Without Docker)
 
 ### Prerequisites
-- Node.js (v16+)
-- MongoDB (running locally or cloud URI)
+- Go 1.21+
+- Node.js 18+
+- PostgreSQL 16+
 
-### Installation
+### Backend
+```bash
+cd go-server
+export DATABASE_URL="postgres://postgres:postgres@localhost:5432/mannequin?sslmode=disable"
+go run main.go
+```
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/yourusername/mannequin.git
-    cd mannequin
-    ```
+### Frontend
+```bash
+cd client
+npm install
+npm run dev
+```
 
-2.  **Setup Backend**
-    ```bash
-    cd server
-    npm install
-    # Create .env file with MONGODB_URI=... if needed
-    npm run dev
-    ```
+## API Endpoints
 
-3.  **Setup Frontend**
-    ```bash
-    cd client
-    npm install
-    npm run dev
-    ```
-
-4.  **Seed Database** (Optional)
-    ```bash
-    cd server
-    node seed.js
-    ```
-
-## Experience
-Visit `http://localhost:5173` to browse the collection.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Health check |
+| GET | `/api/products` | Get all products |
+| GET | `/images/{filename}` | Static image serving |

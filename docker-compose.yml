@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mannequin-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mannequin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  go-server:
+    build: ./go-server
+    container_name: mannequin-go-server
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/mannequin?sslmode=disable
+      IMAGE_BASE_URL: http://localhost:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  client:
+    build: ./client
+    container_name: mannequin-client
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client/src:/app/src
+    depends_on:
+      - go-server
+
+volumes:
+  postgres_data:
