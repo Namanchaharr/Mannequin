@@ -39,5 +39,17 @@ services:
     depends_on:
       - go-server
 
+  client-realistic:
+    build: ./client
+    container_name: mannequin-client-realistic
+    ports:
+      - "5174:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8080/api/influencer-products
+    volumes:
+      - ./client/src:/app/src
+    depends_on:
+      - go-server
+
 volumes:
   postgres_data:

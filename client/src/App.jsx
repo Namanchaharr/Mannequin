@@ -1,65 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Home from './pages/Home';
+import CategoryView from './pages/CategoryView';
 import Navbar from './components/Navbar';
-import CartButton from './components/CartButton';
-import LoginModal from './components/LoginModal';
 import './App.css';
 
 function App() {
   const [expandedId, setExpandedId] = useState(null);
   const [showTitle, setShowTitle] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState('');
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // Check for existing token on mount
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUsername = localStorage.getItem('username');
-    if (token && storedUsername) {
-      setIsAuthenticated(true);
-      setUsername(storedUsername);
-    }
-  }, []);
 
-  const handleLogin = (user) => {
-    setIsAuthenticated(true);
-    setUsername(user);
+
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    setIsAuthenticated(false);
-    setUsername('');
+  const handleBackFromCategory = () => {
+    setSelectedCategory(null);
   };
 
-  const handleProfileClick = () => {
-    if (isAuthenticated) {
-      handleLogout();
-    } else {
-      setShowLoginModal(true);
-    }
-  };
+  // If a category is selected, show the category view
+  if (selectedCategory) {
+    return (
+      <div className="App">
+        <CategoryView
+          category={selectedCategory}
+          onBack={handleBackFromCategory}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="App">
       <Navbar
-        showIcon={!!expandedId}
+        showIcon={false}
         showTitle={showTitle}
-        onProfileClick={handleProfileClick}
-        isAuthenticated={isAuthenticated}
+        onProfileClick={() => {}}
+        isAuthenticated={false}
       />
-      <CartButton visible={!!expandedId} />
       <Home
         expandedId={expandedId}
         setExpandedId={setExpandedId}
         onScrollChange={(shouldShow) => setShowTitle(shouldShow)}
-      />
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onLogin={handleLogin}
+        showOutlines={false}
+        onCategoryClick={handleCategoryClick}
       />
     </div>
   );

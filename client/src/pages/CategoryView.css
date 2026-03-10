@@ -1,0 +1,218 @@
+.category-view {
+    height: 100dvh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+    background: black;
+}
+
+/* Full-screen cards identical to landing page */
+.category-card {
+    height: 100vh;
+    height: 100dvh;
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    scroll-snap-align: start;
+}
+
+.category-card-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.category-card-info {
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.85) 30%,
+        rgba(0, 0, 0, 0.5) 60%,
+        rgba(0, 0, 0, 0.15) 85%,
+        transparent 100%
+    );
+    padding: 2rem;
+    padding-bottom: 4rem;
+    color: white;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 20;
+    position: relative;
+}
+
+.category-card-name {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ---- Navbar (identical to landing page Navbar) ---- */
+.category-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 1000;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+}
+
+.cat-nav-left,
+.cat-nav-right {
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cat-nav-center {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+
+/* Title - exact same style as .nav-title on landing page */
+.cat-nav-title {
+    color: white;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+    margin: 0;
+    opacity: 0;
+    animation: fadeInTitle 2s ease forwards;
+}
+
+@keyframes fadeInTitle {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Back button in navbar */
+.category-back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 0;
+    box-shadow: none;
+    opacity: 0;
+    animation: fadeInBackBtn 0.5s forwards 0.3s;
+}
+
+.category-back-btn:hover {
+    opacity: 0.7;
+    transform: none;
+}
+
+@keyframes fadeInBackBtn {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ---- Link Button (left of cart, same pill style) ---- */
+.link-button {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+
+    /* Same shape & style as CartButton */
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    padding: 0;
+    background-color: #eaeaea;
+    border: none;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    pointer-events: none;
+
+    transform: scale(0.9);
+    opacity: 0;
+
+    /* Exit transition (same as CartButton) */
+    transition:
+        width 1.0s cubic-bezier(0.25, 1, 0.5, 1),
+        opacity 0.5s ease 0.5s,
+        transform 0.5s ease 0.5s;
+}
+
+.link-button.visible {
+    width: 44px;
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+
+    /* Enter transition (same as CartButton) */
+    transition:
+        opacity 1.5s ease,
+        transform 1.5s ease,
+        width 2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.link-button:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 6px 25px rgba(255, 255, 255, 0.5);
+}
+
+.link-button:active {
+    transform: scale(0.95) !important;
+}
+
+.link-button svg {
+    stroke: black;
+    height: 14px;
+    width: 14px;
+}
+
+/* Scroll sentinel */
+.scroll-sentinel {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-more {
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}

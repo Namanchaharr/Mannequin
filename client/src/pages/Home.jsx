@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import ProductCard from '../components/ProductCard';
-import { mockProducts } from '../data/products';
 
-const Home = ({ expandedId, setExpandedId, onScrollChange }) => {
+const Home = ({ expandedId, setExpandedId, onScrollChange, showOutlines, onCategoryClick }) => {
     const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Use mock data for static deployment
-        setProducts(mockProducts);
+        const fetchProducts = async () => {
+            try {
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/products';
+                const response = await axios.get(apiUrl);
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
     }, []);
 
     const handleScroll = (e) => {
@@ -36,14 +48,20 @@ const Home = ({ expandedId, setExpandedId, onScrollChange }) => {
             }}
             onScroll={handleScroll}
         >
-            {products.map(product => (
-                <ProductCard
-                    key={product.id}
-                    product={product}
-                    isExpanded={expandedId === product.id}
-                    onToggle={() => setExpandedId(expandedId === product.id ? null : product.id)}
-                />
-            ))}
+            {loading ? (
+                <div className="loading-state">Loading Showcase...</div>
+            ) : (
+                products.map(product => (
+                    <ProductCard
+                        key={product.id}
+                        product={product}
+                        isExpanded={expandedId === product.id}
+                        onToggle={() => setExpandedId(expandedId === product.id ? null : product.id)}
+                        showOutlines={showOutlines}
+                        onCategoryClick={onCategoryClick}
+                    />
+                ))
+            )}
         </div>
     );
 };

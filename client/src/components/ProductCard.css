@@ -3,13 +3,23 @@
   /* Fallback */
   height: 100dvh;
   width: 100%;
-  background-size: cover;
-  background-position: center;
   position: relative;
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  overflow: hidden;
+}
+
+.product-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none; /* Prevents dragging issues */
+  z-index: 1;
 }
 
 .product-info {
@@ -21,11 +31,11 @@
   text-align: left;
   width: 100%;
   box-sizing: border-box;
-  box-sizing: border-box;
   opacity: 0;
   transition: opacity 1.0s ease;
-  /* Scroll (~0.66s) + 0.33s lag */
-  /* Default (Exit) is trailed */
+  z-index: 20;
+  position: relative;
+  pointer-events: none; /* Lets zoom events pass through the gradient if desired, though we want button clicks to work */
 }
 
 .product-card.expanded .product-info {
@@ -75,4 +85,97 @@
   font-size: 1rem;
   margin: 0.5rem 0 0 0;
   opacity: 0.8;
+}
+
+/* --- Interactive Clothing Outlines --- */
+.outlines-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none; /* Let clicks pass through the container... */
+}
+
+.outlines-container svg {
+  width: 100%;
+  height: 100%;
+}
+
+.clothing-outline {
+  pointer-events: auto; /* ...but capture clicks on the polygons */
+  fill: rgba(255, 255, 255, 0.1);
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 0.5;
+  stroke-dasharray: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: pulseOutline 2s infinite alternate;
+}
+
+.clothing-outline:hover {
+  fill: rgba(255, 255, 255, 0.6);
+  stroke: #fff;
+  stroke-width: 1;
+  stroke-dasharray: 0; 
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+}
+
+@keyframes pulseOutline {
+  from {
+    stroke-opacity: 0.4;
+  }
+  to {
+    stroke-opacity: 1;
+  }
+}
+
+/* --- Interactive Tags --- */
+.clothing-tag-container {
+  overflow: visible;
+  pointer-events: none; /* Let the container pass clicks */
+}
+
+.clothing-tag {
+  pointer-events: auto; /* Capture clicks on the tag itself */
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(240, 240, 240, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  cursor: pointer;
+  color: #333; /* Dark color for icons against light background */
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  opacity: 0;
+  animation: fadeInTag 0.5s forwards 0.3s;
+  box-sizing: border-box;
+}
+
+.clothing-tag svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@keyframes fadeInTag {
+  from { opacity: 0; transform: translateY(10px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.clothing-tag:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px) scale(1.05); 
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
 }

@@ -4,9 +4,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -22,6 +24,7 @@ type Product struct {
 	Price       float64 `json:"price"`
 	Description string  `json:"description"`
 	Image       string  `json:"image"`
+	Category    string  `json:"category"`
 }
 
 // User represents a user account
@@ -69,6 +72,7 @@ func main() {
 
 	// API routes
 	r.HandleFunc("/api/products", getProducts).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/products/category/{category}", getProductsByCategory).Methods("GET", "OPTIONS")
 
 	// Static file serving for images
 	imagesDir := filepath.Join(".", "images")
@@ -122,11 +126,18 @@ func createTables() {
 		name VARCHAR(255) NOT NULL,
 		price DECIMAL(10,2) NOT NULL,
 		description TEXT,
-		image VARCHAR(500) NOT NULL
+		image VARCHAR(500) NOT NULL,
+		category VARCHAR(100) DEFAULT ''
 	);
 	`
 	if _, err := db.Exec(productQuery); err != nil {
 		log.Fatalf("Error creating products table: %v", err)
+	}
+
+	// Add category column if it doesn't exist (for existing DBs)
+	addCategoryCol := `ALTER TABLE products ADD COLUMN IF NOT EXISTS category VARCHAR(100) DEFAULT '';`
+	if _, err := db.Exec(addCategoryCol); err != nil {
+		log.Fatalf("Error adding category column: %v", err)
 	}
 
 	// Users table
@@ -162,20 +173,23 @@ func seedProducts() {
 		baseURL = "http://localhost:8080"
 	}
 
-	products := []Product{
-		{Name: "Oversized Trench", Price: 129.99, Description: "A structural masterpiece defined by its exaggerated proportions and sharp tailoring. Crafted from premium bonded cotton, this trench features a storm flap and belted waist for a commanding silhouette.", Image: baseURL + "/images/mannequin1.png"},
-		{Name: "Minimalist Blazer", Price: 89.99, Description: "Stripped back to the essentials. This collarless blazer offers a clean, architectural line that frames the body without restriction. Essential wear for the modern purist.", Image: baseURL + "/images/mannequin2.png"},
-		{Name: "Textured Knit", Price: 59.99, Description: "Tactile luxury. A heavy-gauge knit with a unique raised pattern that catches the light. Designed for warmth without compromising on a sleek, fitted profile.", Image: baseURL + "/images/mannequin3.png"},
-		{Name: "Silk Slip Dress", Price: 110.00, Description: "Fluidity in motion. Bias-cut silk that drapes effortlessly over the form. A timeless piece that transitions seamlessly from day into the deepest night.", Image: baseURL + "/images/mannequin4.png"},
-		{Name: "Structured Coat", Price: 180.00, Description: "Rigid meets refined. Featuring strong shoulders and a nipped-in waist, this coat creates a powerful visual statement. The matte finish adds a touch of understated drama.", Image: baseURL + "/images/mannequin1.png"},
-		{Name: "Leather Jacket", Price: 250.00, Description: "Rebellious elegance. Soft, buttery leather cut in a moto style but stripped of excessive hardware. The focus is entirely on the quality of material and the precision of the fit.", Image: baseURL + "/images/mannequin2.png"},
-		{Name: "Black Denim", Price: 60.00, Description: "The foundation of the wardrobe. High-waisted, straight-leg denim in an intense, true black wash. Rigid construction that softens perfectly with wear.", Image: baseURL + "/images/mannequin3.png"},
+	products := []struct {
+		Product
+		Cat string
+	}{
+		{Product{Name: "Oversized Trench", Price: 129.99, Description: "A structural masterpiece defined by its exaggerated proportions and sharp tailoring. Crafted from premium bonded cotton, this trench features a storm flap and belted waist for a commanding silhouette.", Image: baseURL + "/images/mannequin1.png"}, "outerwear"},
+		{Product{Name: "Minimalist Blazer", Price: 89.99, Description: "Stripped back to the essentials. This collarless blazer offers a clean, architectural line that frames the body without restriction. Essential wear for the modern purist.", Image: baseURL + "/images/mannequin2.png"}, "outerwear"},
+		{Product{Name: "Textured Knit", Price: 59.99, Description: "Tactile luxury. A heavy-gauge knit with a unique raised pattern that catches the light. Designed for warmth without compromising on a sleek, fitted profile.", Image: baseURL + "/images/mannequin3.png"}, "tops"},
+		{Product{Name: "Silk Slip Dress", Price: 110.00, Description: "Fluidity in motion. Bias-cut silk that drapes effortlessly over the form. A timeless piece that transitions seamlessly from day into the deepest night.", Image: baseURL + "/images/mannequin4.png"}, "dresses"},
+		{Product{Name: "Structured Coat", Price: 180.00, Description: "Rigid meets refined. Featuring strong shoulders and a nipped-in waist, this coat creates a powerful visual statement. The matte finish adds a touch of understated drama.", Image: baseURL + "/images/mannequin1.png"}, "outerwear"},
+		{Product{Name: "Leather Jacket", Price: 250.00, Description: "Rebellious elegance. Soft, buttery leather cut in a moto style but stripped of excessive hardware. The focus is entirely on the quality of material and the precision of the fit.", Image: baseURL + "/images/mannequin2.png"}, "outerwear"},
+		{Product{Name: "Black Denim", Price: 60.00, Description: "The foundation of the wardrobe. High-waisted, straight-leg denim in an intense, true black wash. Rigid construction that softens perfectly with wear.", Image: baseURL + "/images/mannequin3.png"}, "bottoms"},
 	}
 
 	for _, p := range products {
 		_, err := db.Exec(
-			"INSERT INTO products (name, price, description, image) VALUES ($1, $2, $3, $4)",
-			p.Name, p.Price, p.Description, p.Image,
+			"INSERT INTO products (name, price, description, image, category) VALUES ($1, $2, $3, $4, $5)",
+			p.Name, p.Price, p.Description, p.Image, p.Cat,
 		)
 		if err != nil {
 			log.Printf("Error seeding product: %v", err)
@@ -277,7 +291,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 }
 
 func getProducts(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT id, name, price, description, image FROM products ORDER BY id")
+	rows, err := db.Query("SELECT id, name, price, description, image, category FROM products ORDER BY id")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -287,7 +301,7 @@ func getProducts(w http.ResponseWriter, r *http.Request) {
 	var products []Product
 	for rows.Next() {
 		var p Product
-		if err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Description, &p.Image); err != nil {
+		if err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Description, &p.Image, &p.Category); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -296,6 +310,62 @@ func getProducts(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(products)
+}
+
+func getProductsByCategory(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	category := vars["category"]
+
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+
+	page := 1
+	limit := 10
+	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+		page = p
+	}
+	if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
+		limit = l
+	}
+
+	// First get all products in this category
+	rows, err := db.Query("SELECT id, name, price, description, image, category FROM products WHERE category = $1 ORDER BY id", category)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var allProducts []Product
+	for rows.Next() {
+		var p Product
+		if err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Description, &p.Image, &p.Category); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		allProducts = append(allProducts, p)
+	}
+
+	if len(allProducts) == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode([]Product{})
+		return
+	}
+
+	// Cycle products to simulate infinite scroll
+	offset := (page - 1) * limit
+	result := make([]Product, 0, limit)
+	for i := 0; i < limit; i++ {
+		idx := (offset + i) % len(allProducts)
+		p := allProducts[idx]
+		// Give each item a unique virtual ID for frontend keying
+		p.ID = offset + i + 1
+		result = append(result, p)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Total-Pages", strconv.Itoa(int(math.Max(float64(page+5), 20)))) // Always signal more pages
+	json.NewEncoder(w).Encode(result)
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {

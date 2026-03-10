@@ -37,11 +37,11 @@
     margin: 0;
 }
 
-/* Profile Icon - Fixed Bottom Left */
+/* Profile Icon - Fixed Bottom Right */
 .profile-icon {
     position: fixed;
     bottom: 2rem;
-    left: 2rem;
+    right: 2rem;
     z-index: 1000;
     display: flex;
     align-items: center;

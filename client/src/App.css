@@ -17,3 +17,16 @@ body {
 }
 
 /* Body styles moved to html, body selector above */
+
+.loading-state {
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3em;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  background: black;
+}
