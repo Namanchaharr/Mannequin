@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 5000;
 
 async function start() {
   try {
-    
+    //db connections
     const res = await pool.query("SELECT NOW()");
     console.log(res.rows);    
     console.log("DB Connected");

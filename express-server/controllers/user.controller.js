@@ -1,10 +1,13 @@
 import { createUser } from "../models/user.model.js";
 
+
+
+//need to add backend limits like is username and password are valid 
 export async function createUserController(req, res) {
   try {
     const { email, password, username } = req.body;
 
-    // basic validation (keep it simple for now)
+    // basic validation 
     if (!email || !password || !username) {
       return res.status(400).json({ error: "Missing fields" });
     }
@@ -23,4 +26,4 @@ export async function createUserController(req, res) {
 
     res.status(500).json({ error: "Internal server error" });
   }
-}
+} 
