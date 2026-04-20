@@ -1,10 +1,19 @@
 import pkg from "pg";
 import dotenv from "dotenv";
 
-dotenv.config();
+// Load correct env file based on environment
+if (process.env.NODE_ENV === "test") {
+  dotenv.config({ path: ".env.test" });
+} else {
+  dotenv.config();
+}
 
 const { Pool } = pkg;
-//db config
+
+// Optional debug (remove later)
+console.log("ENV:", process.env.NODE_ENV);
+console.log("DB:", process.env.DB_NAME);
+
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -13,4 +22,5 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
+export { pool };
 export default pool;

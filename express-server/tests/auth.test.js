@@ -1,17 +1,30 @@
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.test" });
+
 import request from "supertest";
 import app from "../app.js";
+import { pool } from "../config/database.js";
 
 describe("Auth Flow", () => {
   let token = "";
-  const email = `test_${Date.now()}@test.com`; // avoid duplicates
+  const email = `test_${Date.now()}@test.com`;
+
+  // Clean DB before tests
+  beforeAll(async () => {
+    await pool.query("TRUNCATE users RESTART IDENTITY CASCADE;");
+  });
+
+  afterAll(async () => {
+    await pool.end();
+  });
 
   it("should signup a user", async () => {
     const res = await request(app)
       .post("/auth/signup")
       .send({
         email,
-        password: "123",
-        username: "gari"
+        password: "test123",
+        username: "test"
       });
 
     expect(res.statusCode).toBe(201);
@@ -22,7 +35,7 @@ describe("Auth Flow", () => {
       .post("/auth/login")
       .send({
         email,
-        password: "123"
+        password: "test123"
       });
 
     expect(res.statusCode).toBe(200);
@@ -32,14 +45,14 @@ describe("Auth Flow", () => {
   });
 
   it("should block protected route without token", async () => {
-    const res = await request(app).get("/users/protected");
+    const res = await request(app).get("/auth/protected");
 
     expect(res.statusCode).toBe(401);
   });
 
   it("should allow protected route with token", async () => {
     const res = await request(app)
-      .get("/users/protected")
+      .get("/auth/protected")
       .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
