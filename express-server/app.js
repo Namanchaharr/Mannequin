@@ -1,11 +1,11 @@
 import express from "express";
-import userRoute from "./routes/user.route.js";
+import authRoute from "./routes/auth.route.js";
 
 const app = express();
 app.use(express.json());
 
 // base route
-app.use("/users", userRoute);
+app.use("/auth", authRoute);
 
 
 export default app;
