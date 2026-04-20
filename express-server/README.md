@@ -1,25 +1,14 @@
-# 🚀 Express Server (Backend)
+# Express Server (Backend)
 
 A Node.js + Express backend with JWT authentication, PostgreSQL, and testing setup using Jest.
 
 ---
 
-## 🧱 Tech Stack
-
-* Node.js (ES Modules)
-* Express
-* PostgreSQL
-* JWT (Authentication)
-* Jest + Supertest (Testing)
-
----
-
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
 cd express-server
 ```
 
@@ -33,7 +22,7 @@ npm install
 
 ---
 
-## 🔐 Environment Setup
+## Environment Setup
 
 Create a `.env` file in the root:
 
@@ -50,7 +39,7 @@ JWT_EXPIRES_IN=7d
 
 ---
 
-## 🗄️ Database Setup (Development)
+## Database Setup (Development)
 
 ### Create database
 
@@ -74,7 +63,7 @@ psql -U postgres -d dev_db -f db/schema.sql
 
 ---
 
-## 🧪 Test Environment Setup
+## Test Environment Setup
 
 ### Create test database
 
@@ -107,7 +96,7 @@ JWT_EXPIRES_IN=1h
 
 ---
 
-## ▶️ Run the Server
+## ▶Run the Server
 
 ```bash
 npm run dev
@@ -121,7 +110,7 @@ http://localhost:5000
 
 ---
 
-## 🧪 Run Tests
+## Run Tests
 
 ```bash
 npm test
@@ -134,7 +123,7 @@ Tests use:
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Auth
 
@@ -146,35 +135,11 @@ Tests use:
 
 ---
 
-## 🔑 Authentication
-
-Use JWT in headers:
-
-```
-Authorization: Bearer <your_token>
 ```
 
 ---
 
-## 📁 Project Structure
-
-```
-express-server/
-│── controllers/
-│── routes/
-│── models/
-│── config/
-│── middlewares/
-│── db/
-│   └── schema.sql
-│── tests/
-│── app.js
-│── server.js
-```
-
----
-
-## 📌 Notes
+## Notes
 
 * `.env` and `.env.test` are ignored (not committed)
 * Use `.env.example` as a template
@@ -183,12 +148,4 @@ express-server/
 
 ---
 
-## 🧠 Future Improvements
 
-* Password hashing (bcrypt)
-* Input validation
-* Refresh tokens
-* Role-based access control
-* Posts feature (next step)
-
----
