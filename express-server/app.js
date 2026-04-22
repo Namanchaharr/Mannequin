@@ -7,5 +7,5 @@ app.use(express.json());
 // base route
 app.use("/auth", authRoute);
 
-
+//dsjfnsjingojsngjosngkofsmgko
 export default app;
