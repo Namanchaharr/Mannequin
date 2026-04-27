@@ -16,7 +16,7 @@ authRoute.get("/protected", authMiddleware, (req, res) => {
 
 
 authRoute.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("Hello auth is working");
 });
 
 

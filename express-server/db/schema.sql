@@ -10,3 +10,13 @@ CREATE TABLE users (
 );
 
 CREATE INDEX idx_users_email ON users(email); 
+
+CREATE TABLE posts (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  image_url TEXT NOT NULL,
+  caption TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_posts_user_id ON posts(user_id);
