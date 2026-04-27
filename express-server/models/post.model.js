@@ -17,7 +17,19 @@ export const createPost = async ({ userId, imageUrl, caption }) => {
 //getting posts from the code
 export const getAllPosts = async () => {
   const result = await pool.query(
-    `SELECT * FROM posts ORDER BY created_at DESC`
+`
+   SELECT 
+      p.id,
+      p.image_url,
+      p.caption,
+      p.created_at,
+      u.id AS user_id,
+      u.username,
+      u.profile_pic
+    FROM posts p
+    JOIN users u ON p.user_id = u.id
+    ORDER BY p.created_at DESC
+  `
   );
 
   return result.rows;
@@ -26,9 +38,20 @@ export const getAllPosts = async () => {
 
 export const getPostsByUser = async (userId) => {
   const result = await pool.query(
-    `SELECT * FROM posts 
-     WHERE user_id = $1 
-     ORDER BY created_at DESC`,
+  `
+    SELECT 
+      p.id,
+      p.image_url,
+      p.caption,
+      p.created_at,
+      u.id AS user_id,
+      u.username,
+      u.profile_pic
+    FROM posts p
+    JOIN users u ON p.user_id = u.id
+    WHERE p.user_id = $1
+    ORDER BY p.created_at DESC
+    `,
     [userId]
   );
 
