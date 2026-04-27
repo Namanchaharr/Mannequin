@@ -35,7 +35,6 @@ export async function createUserController(req, res) {
 export async function loginController(req, res) {
   try {
     const { email, password } = req.body;
-
     // validation
     if (!email || !password) {
       return res.status(400).json({ error: "Missing fields" });
