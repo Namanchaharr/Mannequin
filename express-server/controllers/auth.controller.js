@@ -1,7 +1,7 @@
 import { createUser, findUserByEmail } from "../models/auth.model.js";
 import jwt from "jsonwebtoken";
 
-
+ 
 //need to add backend limits like is username and password are valid 
 //also need to add hashing to save password
 export async function createUserController(req, res) {
@@ -18,12 +18,14 @@ export async function createUserController(req, res) {
     res.status(201).json(user);
 
   } catch (err) {
-    console.error(err.message);
-
     // handle duplicate email
     if (err.code === "23505") {
       return res.status(400).json({ error: "Email already exists" });
     }
+
+
+    // log only unexpected errors
+    console.error(err);
 
     res.status(500).json({ error: "Internal server error" });
   }
@@ -43,14 +45,14 @@ export async function loginController(req, res) {
     const user = await findUserByEmail(email);
 
     if (!user) {
-      return res.status(400).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     // isMatch should have hashing ideally
     const isMatch = password === user.password;
 
     if (!isMatch) {
-      return res.status(400).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     //adding JWT token for the having a session 

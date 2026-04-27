@@ -8,7 +8,7 @@ app.use(express.json());
 
 // base route
 app.use("/auth", authRoute);
-app.use("/post", postRoutes);
+app.use("/posts", postRoutes);
 
 
 export default app;

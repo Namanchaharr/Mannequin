@@ -1,6 +1,6 @@
 import pool from "../config/database.js"; 
 
-//query management for the user module
+//query management for the auth module
 export const createUser = async ({ email, password, username }) => {
   const result = await pool.query(
     `INSERT INTO users (email, password, username)

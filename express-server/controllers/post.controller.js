@@ -1,4 +1,4 @@
-import { createPost } from "../models/post.model.js";
+import { createPost, getAllPosts, getPostsByUser } from "../models/post.model.js";
 
 export async function createPostController(req, res) {
   try {
@@ -23,5 +23,34 @@ export async function createPostController(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to create post" });
+  }
+}
+
+
+export async function getAllPostsController(req, res) {
+  try {
+    const posts = await getAllPosts();
+    res.status(200).json(posts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch posts" });
+  }
+}
+
+export async function getPostsByUserIdController(req, res) {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+
+    // basic validation
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: "Invalid userId" });
+    }
+
+    const posts = await getPostsByUser(userId);
+
+    res.status(200).json(posts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch user posts" });
   }
 }
