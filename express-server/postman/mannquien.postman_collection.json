@@ -1,0 +1,113 @@
+{
+	"info": {
+		"_postman_id": "56d2b29d-a5b4-430d-bb18-0b8a313f2722",
+		"name": "mannquien",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "21045302"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "user login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@test.com\",\n  \"password\": \"123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "create user/signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@test.com\",\n  \"password\": \"123\",\n  \"username\": \"gari\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/auth/signup"
+					},
+					"response": []
+				},
+				{
+					"name": "JWT testing",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": "{{baseUrl}}/auth/protected"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Post",
+			"item": [
+				{
+					"name": "createPost",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"image_url\": \"https://picsum.photos/500\",\n  \"caption\": \"first post\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/posts"
+					},
+					"response": []
+				},
+				{
+					"name": "getAllposts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/posts"
+					},
+					"response": []
+				},
+				{
+					"name": "getPostuser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/posts/1"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

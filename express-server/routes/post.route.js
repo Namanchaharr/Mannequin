@@ -8,5 +8,7 @@ const postRoutes = express.Router();
 postRoutes.post("/", authMiddleware, createPostController);
 postRoutes.get("/", getAllPostsController);
 postRoutes.get("/:userId", getPostsByUserIdController);
+//need to create a delete post using the code in getPostsByUserIdController
+
 
 export default postRoutes;
