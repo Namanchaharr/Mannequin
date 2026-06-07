@@ -1,12 +1,28 @@
 import express from "express";
-import { createPostController, getPostsByUserIdController, getAllPostsController } from "../controllers/post.controller.js";
-import { authMiddleware } from "../middlewares/auth.middleware.js";
+import {
+  createPostController,
+  getPostsByUserIdController,
+  getAllPostsController,
+  getPostByIdController,
+  updatePostController,
+} from "../controllers/post.controller.js";
 
-const postRoutes = express.Router();
+import { authMiddleware} from "../middlewares/auth.middleware.js";
+import { validatePostOwnership} from "../middlewares/validatePostOwnership.js";
+
+
 
 // Create post (protected)
+const postRoutes = express.Router();
+
 postRoutes.post("/", authMiddleware, createPostController);
+
 postRoutes.get("/", getAllPostsController);
-postRoutes.get("/:userId", getPostsByUserIdController);
+
+postRoutes.get("/user/:userId", getPostsByUserIdController);
+
+postRoutes.get("/:id", getPostByIdController);
+
+postRoutes.patch("/:id", authMiddleware, validatePostOwnership, updatePostController);
 
 export default postRoutes;

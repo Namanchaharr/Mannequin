@@ -1,8 +1,9 @@
-import { createPost, getAllPosts, getPostsByUser } from "../models/post.model.js";
+import { createPost, getAllPosts, getPostsByUser,  
+  getPostById, updatePost, replacePostLinks } from "../models/post.model.js";
 
 export async function createPostController(req, res) {
   try {
-    const { image_url, caption } = req.body;
+    const { image_url, caption, links = [] } = req.body;
 
     // validation
     if (!image_url) {
@@ -17,6 +18,7 @@ export async function createPostController(req, res) {
       userId,
       imageUrl: image_url,
       caption,
+      links,
     });
 
     res.status(201).json(post);
@@ -25,7 +27,6 @@ export async function createPostController(req, res) {
     res.status(500).json({ error: "Failed to create post" });
   }
 }
-
 
 export async function getAllPostsController(req, res) {
   try {
@@ -52,5 +53,62 @@ export async function getPostsByUserIdController(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch user posts" });
+  }
+}
+
+
+export async function getPostByIdController(req, res) {
+  try {
+    const postId = req.params.id;
+
+    const post = await getPostById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        error: "Post not found",
+      });
+    }
+
+    return res.status(200).json(post);
+
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      error: "Failed to fetch post",
+    });
+  }
+}
+
+
+export async function updatePostController(req, res) {
+  try {
+    const postId = req.params.id;
+
+    const {
+      image_url,
+      caption,
+      links,
+    } = req.body;
+
+    await updatePost(postId, {
+      imageUrl: image_url,
+      caption,
+    });
+
+    if (links !== undefined) {
+      await replacePostLinks(postId, links);
+    }
+
+    const updatedPost = await getPostById(postId);
+
+    return res.status(200).json(updatedPost);
+
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      error: "Failed to update post",
+    });
   }
 }

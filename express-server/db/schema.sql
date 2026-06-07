@@ -19,4 +19,13 @@ CREATE TABLE posts (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE post_links (
+  id SERIAL PRIMARY KEY,
+  post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+
+  text TEXT NOT NULL,
+  url TEXT NOT NULL
+);
+
+
 CREATE INDEX idx_posts_user_id ON posts(user_id);
