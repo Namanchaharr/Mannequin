@@ -6,26 +6,27 @@ A Node.js + Express backend with JWT authentication, PostgreSQL, and integration
 
 # Features
 
-- JWT Authentication
-- PostgreSQL Database
-- REST API with Express
-- Post Creation System
-- User-based Post Fetching
-- SQL JOIN queries for enriched post responses
-- Integration Testing with Jest + Supertest
-- Separate development and test databases
-- Structured controller/model architecture
+* JWT Authentication
+* PostgreSQL Database
+* REST API with Express
+* Post Creation System
+* Post Links & Mentions System
+* User-based Post Fetching
+* SQL JOIN queries for enriched post responses
+* Integration Testing with Jest + Supertest
+* Separate development and test databases
+* Structured controller/model architecture
 
 ---
 
 # Tech Stack
 
-- Node.js
-- Express.js
-- PostgreSQL
-- JWT Authentication
-- Jest
-- Supertest
+* Node.js
+* Express.js
+* PostgreSQL
+* JWT Authentication
+* Jest
+* Supertest
 
 ---
 
@@ -74,8 +75,6 @@ JWT_EXPIRES_IN=7d
 sudo -u postgres psql -c "CREATE DATABASE dev_db;"
 ```
 
----
-
 ## Load schema
 
 ```bash
@@ -92,15 +91,11 @@ sudo -u postgres psql -d dev_db -f db/schema.sql
 sudo -u postgres psql -c "CREATE DATABASE test_db;"
 ```
 
----
-
 ## Load schema into test database
 
 ```bash
 sudo -u postgres psql -d test_db -f db/schema.sql
 ```
-
----
 
 ## Create `.env.test`
 
@@ -141,9 +136,23 @@ npm test
 
 Tests use:
 
-- isolated PostgreSQL test database (`test_db`)
-- clean database state before execution
-- integration testing with real API requests
+* isolated PostgreSQL test database (`test_db`)
+* clean database state before execution
+* integration testing with real API requests
+
+---
+
+# Database Relationships
+
+users (1) → (many) posts
+
+posts (1) → (many) post_links
+
+Current tables:
+
+* users
+* posts
+* post_links
 
 ---
 
@@ -152,20 +161,20 @@ Tests use:
 ## Authentication
 
 | Method | Endpoint          | Description             | Protected |
-| ------ | ----------------- | ----------------------- | ---------- |
-| POST   | `/auth/signup`    | Register new user       | No |
-| POST   | `/auth/login`     | Login and get JWT token | No |
-| GET    | `/auth/protected` | Protected test route    | Yes |
+| ------ | ----------------- | ----------------------- | --------- |
+| POST   | `/auth/signup`    | Register new user       | No        |
+| POST   | `/auth/login`     | Login and get JWT token | No        |
+| GET    | `/auth/protected` | Protected test route    | Yes       |
 
 ---
 
 ## Posts
 
-| Method | Endpoint         | Description                  | Protected |
-| ------ | ---------------- | ---------------------------- | ---------- |
-| POST   | `/posts`         | Create a new post            | Yes |
-| GET    | `/posts`         | Get all posts                | No |
-| GET    | `/posts/:userId` | Get all posts from one user  | No |
+| Method | Endpoint         | Description                 | Protected |
+| ------ | ---------------- | --------------------------- | --------- |
+| POST   | `/posts`         | Create a new post           | Yes       |
+| GET    | `/posts`         | Get all posts               | No        |
+| GET    | `/posts/:userId` | Get all posts from one user | No        |
 
 ---
 
@@ -196,9 +205,25 @@ Content-Type: application/json
 ```json
 {
   "image_url": "https://example.com/image.jpg",
-  "caption": "My first post"
+  "caption": "My first post",
+  "links": [
+    {
+      "text": "@john",
+      "url": "/users/john"
+    },
+    {
+      "text": "GitHub",
+      "url": "https://github.com/gariman"
+    }
+  ]
 }
 ```
+
+Notes:
+
+* `links` is optional
+* A post can contain zero or more links
+* Each link contains display text and a destination URL
 
 ---
 
@@ -222,21 +247,22 @@ Content-Type: application/json
 
 Current integration tests cover:
 
-- User signup
-- Duplicate signup validation
-- Login flow
-- Invalid login attempts
-- JWT protected routes
-- Post creation
-- Post fetching
-- User-specific post fetching
-- Edge case validation
+* User signup
+* Duplicate signup validation
+* Login flow
+* Invalid login attempts
+* JWT protected routes
+* Post creation
+* Post creation with links
+* Post fetching
+* User-specific post fetching
+* Edge case validation
 
 Testing stack:
 
-- Jest
-- Supertest
-- PostgreSQL (`test_db`)
+* Jest
+* Supertest
+* PostgreSQL (`test_db`)
 
 ---
 
@@ -261,12 +287,12 @@ express-server/
 
 # Notes
 
-- `.env` and `.env.test` are ignored from git
-- Always update `db/schema.sql` when schema changes
-- Tests run with `NODE_ENV=test`
-- PostgreSQL foreign keys enforce relational integrity
-- Controllers use structured error handling
-- JWT authentication is handled through middleware
+* `.env` and `.env.test` are ignored from git
+* Always update `db/schema.sql` when schema changes
+* Tests run with `NODE_ENV=test`
+* PostgreSQL foreign keys enforce relational integrity
+* Controllers use structured error handling
+* JWT authentication is handled through middleware
 
 ---
 
@@ -274,12 +300,14 @@ express-server/
 
 Planned features:
 
-- Delete posts with ownership authorization
-- Update posts
-- Tags system
-- Pagination
-- Image uploads (S3 / Cloudinary)
-- Nested API responses
-- Role-based authorization
+* Delete posts with ownership authorization
+* Update posts
+* Pagination
+* Image uploads (S3 / Cloudinary)
+* Nested API responses
+* Role-based authorization
+* Notifications
+* User mentions and profile linking
 
----
+```
+```

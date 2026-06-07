@@ -39,6 +39,37 @@ describe("Post Flow", () => {
       userId = res.body.user_id;
     });
 
+
+    it("should create a post with links", async () => {
+      const res = await request(app)
+        .post("/posts")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          image_url: "https://picsum.photos/500",
+          caption: "post with links",
+          links: [
+            {
+              text: "@john",
+              url: "/users/john"
+            },
+            {
+              text: "GitHub",
+              url: "https://github.com/test"
+            }
+          ]
+        });
+
+      expect(res.statusCode).toBe(201);
+
+      const links = await pool.query(
+        "SELECT * FROM post_links WHERE post_id = $1",
+        [res.body.id]
+      );
+
+      expect(links.rows.length).toBe(2);
+    });
+
+
     it("should fail without token", async () => {
       const res = await request(app)
         .post("/posts")
@@ -61,6 +92,16 @@ describe("Post Flow", () => {
     });
   });
 
+
+
+
+
+
+
+
+
+
+  
   // ---------------- GET POSTS ----------------
   describe("Get Posts", () => {
     it("should return all posts", async () => {

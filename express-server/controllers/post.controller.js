@@ -2,7 +2,7 @@ import { createPost, getAllPosts, getPostsByUser } from "../models/post.model.js
 
 export async function createPostController(req, res) {
   try {
-    const { image_url, caption } = req.body;
+    const { image_url, caption, links = [] } = req.body;
 
     // validation
     if (!image_url) {
@@ -17,6 +17,7 @@ export async function createPostController(req, res) {
       userId,
       imageUrl: image_url,
       caption,
+      links,
     });
 
     res.status(201).json(post);
@@ -25,7 +26,6 @@ export async function createPostController(req, res) {
     res.status(500).json({ error: "Failed to create post" });
   }
 }
-
 
 export async function getAllPostsController(req, res) {
   try {
