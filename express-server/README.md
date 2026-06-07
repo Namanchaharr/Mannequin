@@ -12,7 +12,7 @@ A Node.js + Express backend with JWT authentication, PostgreSQL, and integration
 * Post Creation System
 * Post Links & Mentions System
 * User-based Post Fetching
-* SQL JOIN queries for enriched post responses
+* Relational post aggregation with user and link data
 * Integration Testing with Jest + Supertest
 * Separate development and test databases
 * Structured controller/model architecture
@@ -237,7 +237,17 @@ Notes:
   "created_at": "2026-05-13T12:00:00.000Z",
   "user_id": 1,
   "username": "testuser",
-  "profile_pic": null
+  "profile_pic": null,
+  "links": [
+    {
+      "text": "@john",
+      "url": "/users/john"
+    },
+    {
+      "text": "GitHub",
+      "url": "https://github.com/gariman"
+    }
+  ]
 }
 ```
 
@@ -254,7 +264,7 @@ Current integration tests cover:
 * JWT protected routes
 * Post creation
 * Post creation with links
-* Post fetching
+* Post fetching with nested links
 * User-specific post fetching
 * Edge case validation
 
@@ -304,7 +314,6 @@ Planned features:
 * Update posts
 * Pagination
 * Image uploads (S3 / Cloudinary)
-* Nested API responses
 * Role-based authorization
 * Notifications
 * User mentions and profile linking

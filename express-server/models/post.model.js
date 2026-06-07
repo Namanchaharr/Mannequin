@@ -29,11 +29,11 @@ export const createPost = async ({
   return post;
 };
 
-//getting posts from the code
+//getting posts from the code it also using left join to connect values from post -> the links so all the links can be fetched
 export const getAllPosts = async () => {
-  const result = await pool.query(
-`
-   SELECT 
+  // Get all posts with user info
+  const postsResult = await pool.query(`
+    SELECT
       p.id,
       p.image_url,
       p.caption,
@@ -44,17 +44,36 @@ export const getAllPosts = async () => {
     FROM posts p
     JOIN users u ON p.user_id = u.id
     ORDER BY p.created_at DESC
-  `
-  );
+  `);
 
-  return result.rows;
+  // Get all links
+  const linksResult = await pool.query(`
+    SELECT
+      post_id,
+      text,
+      url
+    FROM post_links
+  `);
+
+  // Attach links to each post  and ideally
+  const posts = postsResult.rows.map(post => ({
+    ...post,
+    links: linksResult.rows
+      .filter(link => link.post_id === post.id)
+      .map(({ text, url }) => ({
+        text,
+        url
+      }))
+  }));
+
+  return posts;
 };
 
 
 export const getPostsByUser = async (userId) => {
   const result = await pool.query(
-  `
-    SELECT 
+    `
+    SELECT
       p.id,
       p.image_url,
       p.caption,
@@ -70,5 +89,25 @@ export const getPostsByUser = async (userId) => {
     [userId]
   );
 
-  return result.rows;
+  const linksResult = await pool.query(
+    `
+    SELECT
+      post_id,
+      text,
+      url
+    FROM post_links
+    `
+  );
+
+  const posts = result.rows.map(post => ({
+    ...post,
+    links: linksResult.rows
+      .filter(link => link.post_id === post.id)
+      .map(({ text, url }) => ({
+        text,
+        url
+      }))
+  }));
+
+  return posts;
 };
