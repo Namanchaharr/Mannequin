@@ -78,7 +78,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"image_url\": \"https://picsum.photos/500\",\n  \"caption\": \"first post\"\n}",
+							"raw": "{\n  \"image_url\": \"https://picsum.photos/500\",\n  \"caption\": \"first post\",\n  \"links\": [\n    {\n      \"text\": \"@john\",\n      \"url\": \"/users/john\"\n    },\n    {\n      \"text\": \"GitHub\",\n      \"url\": \"helloworld.com\"\n    }\n  ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -103,6 +103,39 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"url": "{{baseUrl}}/posts/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "getPostById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/posts/1"
+					},
+					"response": []
+				},
+				{
+					"name": "updatePost",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"image_url\": \"https://picsum.photos/600\",\n  \"caption\": \"updated caption\",\n  \"links\": [\n    {\n      \"text\": \"GitHub\",\n      \"url\": \"https://github.com\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": "{{baseUrl}}/posts/1"
 					},
 					"response": []

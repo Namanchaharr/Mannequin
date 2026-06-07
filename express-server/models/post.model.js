@@ -111,3 +111,103 @@ export const getPostsByUser = async (userId) => {
 
   return posts;
 };
+
+
+
+
+//get posts based on id using this to be able to change and update posts 
+export const getPostById = async (postId) => {
+  const result = await pool.query(
+    `
+    SELECT
+      p.id,
+      p.image_url,
+      p.caption,
+      p.created_at,
+      u.id AS user_id,
+      u.username,
+      u.profile_pic
+    FROM posts p
+    JOIN users u ON p.user_id = u.id
+    WHERE p.id = $1
+    `,
+    [postId]
+  );
+
+  if (result.rows.length === 0) {
+    return null;
+  }
+
+  const post = result.rows[0];
+
+  const linksResult = await pool.query(
+    `
+    SELECT
+      text,
+      url
+    FROM post_links
+    WHERE post_id = $1
+    `,
+    [postId]
+  );
+
+  return {
+    ...post,
+    links: linksResult.rows
+  };
+};
+
+
+export const updatePost = async (
+  postId,
+  { imageUrl, caption }
+) => {
+  const result = await pool.query(
+    `
+    UPDATE posts
+    SET
+      image_url = COALESCE($1, image_url),
+      caption = COALESCE($2, caption)
+    WHERE id = $3
+    RETURNING *
+    `,
+    [imageUrl, caption, postId]
+  );
+
+  return result.rows[0];
+};
+
+
+
+export const replacePostLinks = async (
+  postId,
+  links
+) => {
+  await pool.query(
+    `
+    DELETE FROM post_links
+    WHERE post_id = $1
+    `,
+    [postId]
+  );
+
+  for (const link of links) {
+    await pool.query(
+      `
+      INSERT INTO post_links (
+        post_id,
+        text,
+        url
+      )
+      VALUES ($1, $2, $3)
+      `,
+      [postId, link.text, link.url]
+    );
+  }
+};
+
+
+
+
+//add a delete fucntion based on the link post id and then delete the links around it
+

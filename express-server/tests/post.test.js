@@ -8,7 +8,9 @@ import { createTestUser } from "./helpers/auth.helper.js";
 
 describe("Post Flow", () => {
   let token;
+  let secondToken;
   let userId;
+  let postId;
 
   beforeAll(async () => {
     await pool.query(
@@ -17,6 +19,14 @@ describe("Post Flow", () => {
 
     const user = await createTestUser();
     token = user.token;
+
+    const secondUser = await createTestUser(
+      "other@test.com",
+      "123",
+      "otheruser"
+    );
+
+    secondToken = secondUser.token;
   });
 
   afterAll(async () => {
@@ -40,6 +50,7 @@ describe("Post Flow", () => {
       expect(res.body.user_id).toBeDefined();
 
       userId = res.body.user_id;
+      postId = res.body.id;
     });
 
     it("should create a post with links", async () => {
@@ -139,9 +150,14 @@ describe("Post Flow", () => {
         },
       ]);
     });
+  });
 
+  // ---------------- GET POSTS BY USER ----------------
+
+  describe("Get Posts By User", () => {
     it("should return posts by userId", async () => {
-      const res = await request(app).get(`/posts/${userId}`);
+      const res = await request(app)
+        .get(`/posts/user/${userId}`);
 
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
@@ -154,10 +170,128 @@ describe("Post Flow", () => {
     });
 
     it("should return empty array for user with no posts", async () => {
-      const res = await request(app).get("/posts/9999");
+      const res = await request(app)
+        .get("/posts/user/9999");
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual([]);
+    });
+  });
+
+  // ---------------- GET POST BY ID ----------------
+
+  describe("Get Post By Id", () => {
+    it("should return a single post", async () => {
+      const res = await request(app)
+        .get(`/posts/${postId}`);
+
+      expect(res.statusCode).toBe(200);
+
+      expect(res.body.id).toBe(postId);
+      expect(res.body).toHaveProperty("image_url");
+      expect(res.body).toHaveProperty("caption");
+      expect(res.body).toHaveProperty("links");
+
+      expect(Array.isArray(res.body.links)).toBe(true);
+    });
+
+    it("should return 404 if post does not exist", async () => {
+      const res = await request(app)
+        .get("/posts/9999");
+
+      expect(res.statusCode).toBe(404);
+
+      expect(res.body).toEqual({
+        error: "Post not found",
+      });
+    });
+  });
+
+  // ---------------- UPDATE POST ----------------
+
+  describe("Update Post", () => {
+    it("should update caption", async () => {
+      const res = await request(app)
+        .patch(`/posts/${postId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          caption: "updated caption",
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.caption).toBe("updated caption");
+    });
+
+    it("should update image", async () => {
+      const res = await request(app)
+        .patch(`/posts/${postId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          image_url: "https://picsum.photos/600",
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.image_url).toBe(
+        "https://picsum.photos/600"
+      );
+    });
+
+    it("should replace links", async () => {
+      const res = await request(app)
+        .patch(`/posts/${postId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          links: [
+            {
+              text: "Updated",
+              url: "https://updated.com",
+            },
+          ],
+        });
+
+      expect(res.statusCode).toBe(200);
+
+      expect(res.body.links).toEqual([
+        {
+          text: "Updated",
+          url: "https://updated.com",
+        },
+      ]);
+    });
+
+    it("should fail without token", async () => {
+      const res = await request(app)
+        .patch(`/posts/${postId}`)
+        .send({
+          caption: "hacked",
+        });
+
+      expect(res.statusCode).toBe(401);
+    });
+
+    it("should fail for non-owner", async () => {
+      const res = await request(app)
+        .patch(`/posts/${postId}`)
+        .set(
+          "Authorization",
+          `Bearer ${secondToken}`
+        )
+        .send({
+          caption: "hacked",
+        });
+
+      expect(res.statusCode).toBe(403);
+    });
+
+    it("should fail if post does not exist", async () => {
+      const res = await request(app)
+        .patch("/posts/9999")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          caption: "test",
+        });
+
+      expect(res.statusCode).toBe(404);
     });
   });
 });

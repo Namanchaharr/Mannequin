@@ -1,6 +1,6 @@
 # Express Server (Backend)
 
-A Node.js + Express backend with JWT authentication, PostgreSQL, and integration testing using Jest + Supertest.
+A Node.js + Express backend featuring JWT authentication, PostgreSQL, relational post management, and integration testing with Jest and Supertest.
 
 ---
 
@@ -8,14 +8,17 @@ A Node.js + Express backend with JWT authentication, PostgreSQL, and integration
 
 * JWT Authentication
 * PostgreSQL Database
-* REST API with Express
-* Post Creation System
-* Post Links & Mentions System
+* RESTful API with Express
+* User Registration and Login
+* Post Creation
+* Post Updates
+* Individual Post Fetching
 * User-based Post Fetching
-* Relational post aggregation with user and link data
+* Post Links Support
+* Relational Post Aggregation with User and Link Data
 * Integration Testing with Jest + Supertest
-* Separate development and test databases
-* Structured controller/model architecture
+* Separate Development and Test Databases
+* Structured Controller / Service Architecture
 
 ---
 
@@ -32,15 +35,16 @@ A Node.js + Express backend with JWT authentication, PostgreSQL, and integration
 
 # Setup Instructions
 
-## 1. Clone the repository
+## 1. Clone the Repository
 
 ```bash
+git clone <repository-url>
 cd express-server
 ```
 
 ---
 
-## 2. Install dependencies
+## 2. Install Dependencies
 
 ```bash
 npm install
@@ -69,13 +73,13 @@ JWT_EXPIRES_IN=7d
 
 # Database Setup (Development)
 
-## Create development database
+## Create Development Database
 
 ```bash
 sudo -u postgres psql -c "CREATE DATABASE dev_db;"
 ```
 
-## Load schema
+## Load Schema
 
 ```bash
 sudo -u postgres psql -d dev_db -f db/schema.sql
@@ -85,13 +89,13 @@ sudo -u postgres psql -d dev_db -f db/schema.sql
 
 # Test Environment Setup
 
-## Create test database
+## Create Test Database
 
 ```bash
 sudo -u postgres psql -c "CREATE DATABASE test_db;"
 ```
 
-## Load schema into test database
+## Load Schema into Test Database
 
 ```bash
 sudo -u postgres psql -d test_db -f db/schema.sql
@@ -114,13 +118,15 @@ JWT_EXPIRES_IN=1h
 
 ---
 
-# Run the Server
+# Running the Server
+
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Server runs at:
+The server will run at:
 
 ```text
 http://localhost:5000
@@ -128,7 +134,7 @@ http://localhost:5000
 
 ---
 
-# Run Tests
+# Running Tests
 
 ```bash
 npm test
@@ -136,17 +142,18 @@ npm test
 
 Tests use:
 
-* isolated PostgreSQL test database (`test_db`)
-* clean database state before execution
-* integration testing with real API requests
+* An isolated PostgreSQL test database (`test_db`)
+* A clean database state before execution
+* Real HTTP requests through Supertest
+* End-to-end API integration testing
 
 ---
 
 # Database Relationships
 
-users (1) → (many) posts
-
-posts (1) → (many) post_links
+```text
+users (1) ────< posts (1) ────< post_links
+```
 
 Current tables:
 
@@ -160,27 +167,29 @@ Current tables:
 
 ## Authentication
 
-| Method | Endpoint          | Description             | Protected |
-| ------ | ----------------- | ----------------------- | --------- |
-| POST   | `/auth/signup`    | Register new user       | No        |
-| POST   | `/auth/login`     | Login and get JWT token | No        |
-| GET    | `/auth/protected` | Protected test route    | Yes       |
+| Method | Endpoint          | Description                 | Protected |
+| ------ | ----------------- | --------------------------- | --------- |
+| POST   | `/auth/signup`    | Register a new user         | No        |
+| POST   | `/auth/login`     | Login and receive JWT token | No        |
+| GET    | `/auth/protected` | Protected test route        | Yes       |
 
 ---
 
 ## Posts
 
-| Method | Endpoint         | Description                 | Protected |
-| ------ | ---------------- | --------------------------- | --------- |
-| POST   | `/posts`         | Create a new post           | Yes       |
-| GET    | `/posts`         | Get all posts               | No        |
-| GET    | `/posts/:userId` | Get all posts from one user | No        |
+| Method | Endpoint              | Description                     | Protected |
+| ------ | --------------------- | ------------------------------- | --------- |
+| POST   | `/posts`              | Create a new post               | Yes       |
+| GET    | `/posts`              | Get all posts                   | No        |
+| GET    | `/posts/:id`          | Get a single post by ID         | No        |
+| GET    | `/posts/user/:userId` | Get all posts created by a user | No        |
+| PUT    | `/posts/:id`          | Update a post (owner only)      | Yes       |
 
 ---
 
 # Authentication
 
-Protected routes require a JWT token.
+Protected routes require a valid JWT token.
 
 Example request header:
 
@@ -192,7 +201,7 @@ Authorization: Bearer <jwt_token>
 
 # Example Create Post Request
 
-## Request
+### Request
 
 ```http
 POST /posts
@@ -200,7 +209,7 @@ Authorization: Bearer <jwt_token>
 Content-Type: application/json
 ```
 
-## Body
+### Body
 
 ```json
 {
@@ -261,11 +270,13 @@ Current integration tests cover:
 * Duplicate signup validation
 * Login flow
 * Invalid login attempts
-* JWT protected routes
+* JWT-protected routes
 * Post creation
 * Post creation with links
-* Post fetching with nested links
+* Post updates
+* Post fetching by ID
 * User-specific post fetching
+* Post aggregation with links
 * Edge case validation
 
 Testing stack:
@@ -278,31 +289,33 @@ Testing stack:
 
 # Project Structure
 
-```bash
+```text
 express-server/
 ├── config/
 ├── controllers/
 ├── db/
 ├── middlewares/
-├── models/
 ├── routes/
+├── services/
 ├── tests/
 │   └── helpers/
 ├── app.js
 ├── server.js
-└── package.json
+├── package.json
+└── README.md
 ```
 
 ---
 
 # Notes
 
-* `.env` and `.env.test` are ignored from git
+* `.env` and `.env.test` are excluded from Git
 * Always update `db/schema.sql` when schema changes
 * Tests run with `NODE_ENV=test`
 * PostgreSQL foreign keys enforce relational integrity
 * Controllers use structured error handling
-* JWT authentication is handled through middleware
+* Authentication is handled through middleware
+* Database access is separated into service-layer functions
 
 ---
 
@@ -311,12 +324,12 @@ express-server/
 Planned features:
 
 * Delete posts with ownership authorization
-* Update posts
 * Pagination
-* Image uploads (S3 / Cloudinary)
+* Image uploads (Cloudinary / S3)
 * Role-based authorization
 * Notifications
-* User mentions and profile linking
-
-```
-```
+* Automatic user mention parsing
+* Comments
+* Likes
+* Bookmarks
+* Follow system
