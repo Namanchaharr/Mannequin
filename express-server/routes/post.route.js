@@ -10,8 +10,6 @@ import {
 import { authMiddleware} from "../middlewares/auth.middleware.js";
 import { validatePostOwnership} from "../middlewares/validatePostOwnership.js";
 
-
-
 // Create post (protected)
 const postRoutes = express.Router();
 
