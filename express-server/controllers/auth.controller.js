@@ -14,6 +14,7 @@ export async function createUserController(req, res) {
     }
     const saltRounds = 10;
     const hashedpassword = bcrypt.hashSync(password, saltRounds)
+
     const user = await createUser({ email, hashedpassword, username });
 
     res.status(201).json(user);
@@ -35,6 +36,7 @@ export async function createUserController(req, res) {
 
 // LOGIN
 //after adding hashing this code should not break
+export async function loginController(req, res) {
   try {
     const { email, password } = req.body;
     // validation
@@ -50,6 +52,7 @@ export async function createUserController(req, res) {
 
     // isMatch should have hashing ideally
     const isMatch = bcrypt.compareSync(password, user.password);
+
 
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
@@ -75,3 +78,4 @@ export async function createUserController(req, res) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
   }
+}
