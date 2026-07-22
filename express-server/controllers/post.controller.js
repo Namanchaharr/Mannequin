@@ -1,5 +1,12 @@
-import { createPost, getAllPosts, getPostsByUser,  
-  getPostById, updatePost, replacePostLinks } from "../models/post.model.js";
+import {
+  createPost,
+  getAllPosts,
+  getPostsByUser,
+  getPostById,
+  updatePost,
+  replacePostLinks,
+  deletePost,
+} from "../models/post.model.js";
 
 export async function createPostController(req, res) {
   try {
@@ -110,5 +117,25 @@ export async function updatePostController(req, res) {
     return res.status(500).json({
       error: "Failed to update post",
     });
+  }
+}
+
+export async function deletePostController(req, res) {
+  try {
+    const postId = req.params.id;
+
+    const deleted = await deletePost(postId);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    return res.status(200).json({
+      message: "Post deleted successfully",
+      post: deleted,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to delete post" });
   }
 }
