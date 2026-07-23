@@ -366,5 +366,40 @@ describe("Delete Post", () => {
       error: "Post not found",
     });
   });
+
+it("should delete associated links when deleting a post", async () => {
+  // Create a post with links
+  const createRes = await request(app)
+    .post("/posts")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      image_url: "https://picsum.photos/500",
+      caption: "cascade test",
+      links: [
+        {
+          text: "@john",
+          url: "/users/john",
+        },
+      ],
+    });
+
+  const tempPostId = createRes.body.id;
+
+  // Delete the post
+  await request(app)
+    .delete(`/posts/${tempPostId}`)
+    .set("Authorization", `Bearer ${token}`);
+
+  // Verify links were automatically deleted
+  const links = await pool.query(
+    "SELECT * FROM post_links WHERE post_id = $1",
+    [tempPostId]
+  );
+
+  expect(links.rows).toHaveLength(0);
+});
+
+
+
 }); 
 });
