@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "56d2b29d-a5b4-430d-bb18-0b8a313f2722",
 		"name": "mannquien",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "21045302"
 	},
 	"item": [
@@ -23,7 +23,16 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/auth/login"
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
 					},
 					"response": []
 				},
@@ -41,7 +50,18 @@
 								}
 							}
 						},
-						"url": "http://localhost:5000/auth/signup"
+						"url": {
+							"raw": "http://localhost:5000/auth/signup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
 					},
 					"response": []
 				},
@@ -56,7 +76,16 @@
 								"type": "text"
 							}
 						],
-						"url": "{{baseUrl}}/auth/protected"
+						"url": {
+							"raw": "{{baseUrl}}/auth/protected",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"protected"
+							]
+						}
 					},
 					"response": []
 				}
@@ -85,7 +114,15 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/posts"
+						"url": {
+							"raw": "{{baseUrl}}/posts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts"
+							]
+						}
 					},
 					"response": []
 				},
@@ -94,7 +131,15 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{baseUrl}}/posts"
+						"url": {
+							"raw": "{{baseUrl}}/posts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts"
+							]
+						}
 					},
 					"response": []
 				},
@@ -103,7 +148,17 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{baseUrl}}/posts/user/1"
+						"url": {
+							"raw": "{{baseUrl}}/posts/user/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts",
+								"user",
+								"1"
+							]
+						}
 					},
 					"response": []
 				},
@@ -112,7 +167,16 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{baseUrl}}/posts/1"
+						"url": {
+							"raw": "{{baseUrl}}/posts/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts",
+								"1"
+							]
+						}
 					},
 					"response": []
 				},
@@ -136,7 +200,40 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/posts/1"
+						"url": {
+							"raw": "{{baseUrl}}/posts/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete posts",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/posts/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"posts",
+								"1"
+							]
+						}
 					},
 					"response": []
 				}

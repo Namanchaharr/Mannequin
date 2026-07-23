@@ -1,6 +1,6 @@
 import { createUser, findUserByEmail } from "../models/auth.model.js";
 import jwt from "jsonwebtoken";
-
+import bcrypt from 'bcrypt';
  
 //need to add backend limits like is username and password are valid 
 //also need to add hashing to save password
@@ -12,8 +12,10 @@ export async function createUserController(req, res) {
     if (!email || !password || !username) {
       return res.status(400).json({ error: "Missing fields" });
     }
+    const saltRounds = 10;
+    const hashedpassword = bcrypt.hashSync(password, saltRounds)
 
-    const user = await createUser({ email, password, username });
+    const user = await createUser({ email, hashedpassword, username });
 
     res.status(201).json(user);
 
@@ -49,7 +51,8 @@ export async function loginController(req, res) {
     }
 
     // isMatch should have hashing ideally
-    const isMatch = password === user.password;
+    const isMatch = bcrypt.compareSync(password, user.password);
+
 
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid credentials" });

@@ -208,6 +208,16 @@ export const replacePostLinks = async (
 
 
 
+export const deletePost = async (postId) => {
+  const result = await pool.query(
+    `
+    DELETE FROM posts
+    WHERE id = $1
+    RETURNING *
+    `,
+    [postId]
+  );
 
-//add a delete fucntion based on the link post id and then delete the links around it
+  return result.rows[0];
+};
 

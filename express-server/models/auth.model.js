@@ -1,12 +1,12 @@
 import pool from "../config/database.js"; 
 
 //query management for the auth module
-export const createUser = async ({ email, password, username }) => {
+export const createUser = async ({ email, hashedpassword, username }) => {
   const result = await pool.query(
     `INSERT INTO users (email, password, username)
      VALUES ($1, $2, $3)
      RETURNING id, email, username`,
-    [email, password, username]
+    [email, hashedpassword, username]
   );
 
   return result.rows[0];

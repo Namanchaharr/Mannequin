@@ -294,4 +294,112 @@ describe("Post Flow", () => {
       expect(res.statusCode).toBe(404);
     });
   });
+
+
+
+
+ // ---------------- DELETE POST ----------------
+
+describe("Delete Post", () => {
+  it("should delete own post", async () => {
+    const res = await request(app)
+      .delete(`/posts/${postId}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({
+      message: "Post deleted successfully",
+    });
+
+    // Verify it's actually gone
+    const getRes = await request(app)
+      .get(`/posts/${postId}`);
+
+    expect(getRes.statusCode).toBe(404);
+  });
+
+  it("should fail without token", async () => {
+    // Create a temporary post
+    const createRes = await request(app)
+      .post("/posts")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        image_url: "https://picsum.photos/500",
+        caption: "delete test",
+      });
+
+    const tempPostId = createRes.body.id;
+
+    const res = await request(app)
+      .delete(`/posts/${tempPostId}`);
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("should fail for non-owner", async () => {
+    // Create a temporary post owned by user1
+    const createRes = await request(app)
+      .post("/posts")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        image_url: "https://picsum.photos/500",
+        caption: "ownership delete test",
+      });
+
+    const tempPostId = createRes.body.id;
+
+    const res = await request(app)
+      .delete(`/posts/${tempPostId}`)
+      .set("Authorization", `Bearer ${secondToken}`);
+
+    expect(res.statusCode).toBe(403);
+  });
+
+  it("should fail if post does not exist", async () => {
+    const res = await request(app)
+      .delete("/posts/9999")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.statusCode).toBe(404);
+
+    expect(res.body).toEqual({
+      error: "Post not found",
+    });
+  });
+
+it("should delete associated links when deleting a post", async () => {
+  // Create a post with links
+  const createRes = await request(app)
+    .post("/posts")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      image_url: "https://picsum.photos/500",
+      caption: "cascade test",
+      links: [
+        {
+          text: "@john",
+          url: "/users/john",
+        },
+      ],
+    });
+
+  const tempPostId = createRes.body.id;
+
+  // Delete the post
+  await request(app)
+    .delete(`/posts/${tempPostId}`)
+    .set("Authorization", `Bearer ${token}`);
+
+  // Verify links were automatically deleted
+  const links = await pool.query(
+    "SELECT * FROM post_links WHERE post_id = $1",
+    [tempPostId]
+  );
+
+  expect(links.rows).toHaveLength(0);
+});
+
+
+
+}); 
 });
