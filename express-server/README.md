@@ -12,13 +12,15 @@ A Node.js + Express backend featuring JWT authentication, PostgreSQL, relational
 * User Registration and Login
 * Post Creation
 * Post Updates
+* Post Deletion
 * Individual Post Fetching
 * User-based Post Fetching
+* Ownership Authorization
 * Post Links Support
 * Relational Post Aggregation with User and Link Data
 * Integration Testing with Jest + Supertest
 * Separate Development and Test Databases
-* Structured Controller / Service Architecture
+* Layered Route → Middleware → Controller → Model Architecture
 
 ---
 
@@ -118,6 +120,21 @@ JWT_EXPIRES_IN=1h
 
 ---
 
+# Reset Databases
+
+If you need to recreate both development and test databases:
+
+```bash
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS dev_db;" && \
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS test_db;" && \
+sudo -u postgres psql -c "CREATE DATABASE dev_db;" && \
+sudo -u postgres psql -c "CREATE DATABASE test_db;" && \
+sudo -u postgres psql -d dev_db -f db/schema.sql && \
+sudo -u postgres psql -d test_db -f db/schema.sql
+```
+
+---
+
 # Running the Server
 
 Start the development server:
@@ -167,23 +184,24 @@ Current tables:
 
 ## Authentication
 
-| Method | Endpoint          | Description                 | Protected |
-| ------ | ----------------- | --------------------------- | --------- |
-| POST   | `/auth/signup`    | Register a new user         | No        |
-| POST   | `/auth/login`     | Login and receive JWT token | No        |
-| GET    | `/auth/protected` | Protected test route        | Yes       |
+| Method | Endpoint | Description | Protected |
+| ------ | -------- | ----------- | --------- |
+| POST | `/auth/signup` | Register a new user | No |
+| POST | `/auth/login` | Login and receive JWT token | No |
+| GET | `/auth/protected` | Protected test route | Yes |
 
 ---
 
 ## Posts
 
-| Method | Endpoint              | Description                     | Protected |
-| ------ | --------------------- | ------------------------------- | --------- |
-| POST   | `/posts`              | Create a new post               | Yes       |
-| GET    | `/posts`              | Get all posts                   | No        |
-| GET    | `/posts/:id`          | Get a single post by ID         | No        |
-| GET    | `/posts/user/:userId` | Get all posts created by a user | No        |
-| PUT    | `/posts/:id`          | Update a post (owner only)      | Yes       |
+| Method | Endpoint | Description | Protected |
+| ------ | -------- | ----------- | --------- |
+| POST | `/posts` | Create a new post | Yes |
+| GET | `/posts` | Get all posts | No |
+| GET | `/posts/:id` | Get a single post by ID | No |
+| GET | `/posts/user/:userId` | Get all posts created by a user | No |
+| PATCH | `/posts/:id` | Update a post (owner only) | Yes |
+| DELETE | `/posts/:id` | Delete a post (owner only) | Yes |
 
 ---
 
@@ -262,6 +280,20 @@ Notes:
 
 ---
 
+# Middleware
+
+### authMiddleware
+
+- Verifies JWT tokens
+- Attaches the authenticated user to `req.user`
+
+### validatePostOwnership
+
+- Ensures a post exists
+- Ensures only the owner can update or delete a post
+
+---
+
 # Testing
 
 Current integration tests cover:
@@ -274,9 +306,13 @@ Current integration tests cover:
 * Post creation
 * Post creation with links
 * Post updates
+* Post deletion
 * Post fetching by ID
 * User-specific post fetching
 * Post aggregation with links
+* Ownership validation
+* Delete authorization
+* Database cascade deletion
 * Edge case validation
 
 Testing stack:
@@ -295,8 +331,8 @@ express-server/
 ├── controllers/
 ├── db/
 ├── middlewares/
+├── models/
 ├── routes/
-├── services/
 ├── tests/
 │   └── helpers/
 ├── app.js
@@ -304,6 +340,39 @@ express-server/
 ├── package.json
 └── README.md
 ```
+
+---
+
+# Architecture
+
+```text
+HTTP Request
+      │
+      ▼
+Routes
+      │
+      ▼
+Middleware
+(Authentication / Authorization)
+      │
+      ▼
+Controllers
+(Request Handling)
+      │
+      ▼
+Models
+(Database Queries)
+      │
+      ▼
+PostgreSQL
+```
+
+Responsibilities:
+
+* **Routes** define API endpoints and middleware chains.
+* **Middleware** handles authentication and ownership validation.
+* **Controllers** process requests and return HTTP responses.
+* **Models** encapsulate all PostgreSQL database queries.
 
 ---
 
@@ -315,7 +384,8 @@ express-server/
 * PostgreSQL foreign keys enforce relational integrity
 * Controllers use structured error handling
 * Authentication is handled through middleware
-* Database access is separated into service-layer functions
+* Database access is separated into reusable model functions
+* Ownership validation is shared between update and delete endpoints
 
 ---
 
@@ -323,19 +393,18 @@ express-server/
 
 Planned features:
 
-* Delete posts with ownership authorization
 * Pagination
 * Image uploads (Cloudinary / S3)
-* Role-based authorization
 * Notifications
 * Automatic user mention parsing
 * Comments
 * Likes
 * Bookmarks
 * Follow system
-
-
-
+* User profiles
+* Search
+* Admin moderation tools
+* CI/CD (GitHub Actions / Jenkins)
 
 
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS dev_db;" && \
