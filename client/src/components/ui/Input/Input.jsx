@@ -10,20 +10,22 @@ export default function Input({
     className = "",
 }) {
     return (
-        <div className="input-container">
-            <label className="input-label" htmlFor={name}>
-                {label}
-            </label>
+        <div className={`input-container ${className}`}>
+            <div className="input-wrapper">
+                <input
+                    className="input"
+                    id={name}
+                    name={name}
+                    type={type}
+                    placeholder=" "
+                    value={value}
+                    onChange={onChange}
+                />
 
-            <input
-                className={`input ${className}`}
-                id={name}
-                name={name}
-                type={type}
-                placeholder={placeholder}
-                value={value}
-                onChange={onChange}
-            />
+                <label className="input-label" htmlFor={name}>
+                    {label}
+                </label>
+            </div>
         </div>
     );
 }

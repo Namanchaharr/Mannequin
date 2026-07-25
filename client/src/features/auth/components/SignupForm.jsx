@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Input from "../../../components/ui/Input/Input";
+import Button from "../../../components/ui/Button/Button";
+
 
 export default function SignupForm() {
     const [formData, setFormData] = useState({
@@ -56,6 +58,11 @@ export default function SignupForm() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
             />
+
+            <Button type="submit">
+                Sign Up
+            </Button>
+
         </form>
     );
 }
