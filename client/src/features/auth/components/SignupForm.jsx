@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Input from "../../../components/ui/Input/Input";
 import Button from "../../../components/ui/Button/Button";
+import validateSignup from "../utils/validateSignup";
 
 
 export default function SignupForm() {
