@@ -1,22 +1,27 @@
-export function validateSignup({ email, password, username }) {
-  if (!username.trim()) {
-    return "Username is required";
-  }
+// ===== CHANGED =====
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (!email.trim()) {
-    return "Email is required";
-  }
+export default function validateSignup(formData) {
+    const errors = {};
 
-  const emailRegex =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.username.trim()) {
+        errors.username = "Username is required";
+    }
 
-  if (!emailRegex.test(email)) {
-    return "Invalid email";
-  }
+    // ===== CHANGED =====
+    if (!formData.email.trim()) {
+        errors.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+        errors.email = "Please enter a valid email address";
+    }
 
-  if (password.length < 8) {
-    return "Password must be at least 8 characters";
-  }
+    if (formData.password.length < 8) {
+        errors.password = "Password must be at least 8 characters";
+    }
 
-  return null;
+    if (formData.password !== formData.confirmPassword) {
+        errors.confirmPassword = "Passwords do not match";
+    }
+
+    return errors;
 }

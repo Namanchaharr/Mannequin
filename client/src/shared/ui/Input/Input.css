@@ -31,6 +31,17 @@
     transition: 0.2s ease;
 }
 
+.input-error-state {
+    border-color: #dc2626;
+}
+
+.input-error {
+    margin-top: 0.35rem;
+    font-size: 0.875rem;
+    color: #dc2626;
+}
+
+
 .input:focus + .input-label,
 .input:not(:placeholder-shown) + .input-label {
     top: 0;

@@ -7,6 +7,7 @@ export default function Input({
     placeholder = "",
     value,
     onChange,
+    error,
     className = "",
 }) {
     return (
@@ -17,8 +18,7 @@ export default function Input({
                     id={name}
                     name={name}
                     type={type}
-                    placeholder=" "
-                    value={value}
+                    placeholder={placeholder || " "}                    value={value}
                     onChange={onChange}
                 />
 
@@ -26,6 +26,14 @@ export default function Input({
                     {label}
                 </label>
             </div>
+
+            {error && (
+                <p className="input-error">
+                    {error}
+                </p>
+            )}
+
+
         </div>
     );
 }
