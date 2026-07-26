@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Input, Button } from "@/shared/ui";
 import validateSignup from "@/features/auth/utils/validateSignup";
-
+import useSignup from "../hooks/useSignup";
 
 export default function SignupForm() {
     const [formData, setFormData] = useState({
@@ -14,9 +14,10 @@ export default function SignupForm() {
 
     const [errors, setErrors] = useState({});
 
+    // Get signup logic and UI state from the hook.
+    const { signupUser, loading, error } = useSignup();
 
-
-    //bascailly taking the values from form and then sending it to input
+    // Basically taking the values from the form and updating state.
     function handleChange(event) {
         const { name, value } = event.target;
 
@@ -25,40 +26,39 @@ export default function SignupForm() {
             [name]: value,
         }));
 
-
         setErrors((prev) => ({
             ...prev,
             [name]: "",
-        }));        
+        }));
     }
 
-    function handleSubmit(event) {
+    // Made async because signupUser returns a Promise.
+    async function handleSubmit(event) {
         event.preventDefault();
 
-        //getting errors 
+        // Get validation errors.
         const validationErrors = validateSignup(formData);
-
 
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
         }
 
-        //setting errors to zero if there are no errors
+        // Clear validation errors.
         setErrors({});
 
-        console.log(formData);
+        // Delegate signup to the custom hook.
+        // The hook manages loading, backend errors and navigation.
+        await signupUser(formData);
     }
 
-
-   return (
+    return (
         <form onSubmit={handleSubmit}>
             <Input
                 label="Username"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                // ===== CHANGED =====
                 error={errors.username}
             />
 
@@ -68,7 +68,6 @@ export default function SignupForm() {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                // ===== CHANGED =====
                 error={errors.email}
             />
 
@@ -78,7 +77,6 @@ export default function SignupForm() {
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                // ===== CHANGED =====
                 error={errors.password}
             />
 
@@ -88,12 +86,23 @@ export default function SignupForm() {
                 type="password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                // ===== CHANGED =====
                 error={errors.confirmPassword}
             />
 
-            <Button type="submit">
-                Sign Up
+            {/* ===== CHANGED =====
+                Display backend errors separately from validation errors.
+                This can later be replaced by a shared toast component.
+            */}
+            {error && <p>{error}</p>}
+
+            {/* ===== CHANGED =====
+                Disable the button while the signup request is in progress.
+            */}
+            <Button
+                type="submit"
+                disabled={loading}
+            >
+                {loading ? "Signing Up..." : "Sign Up"}
             </Button>
         </form>
     );
