@@ -2,9 +2,9 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.test" });
 
 import request from "supertest";
-import app from "../app.js";
-import pool from "../config/database.js";
-import { createTestUser } from "./helpers/auth.helper.js";
+import app from "../../app.js";
+import pool from "../../config/database.js";
+import { createTestUser } from "../helpers/auth.helper.js";
 
 describe("Post Flow", () => {
   let token;

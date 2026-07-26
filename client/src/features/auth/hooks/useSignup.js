@@ -35,7 +35,7 @@ export default function useSignup() {
             // ===== CHANGED =====
             // Do not rethrow. The hook owns backend error handling.
         } finally {
-            setLoading(true);
+            setLoading(false);
         }
     }
 
