@@ -97,4 +97,100 @@ describe("SignupPage Integration", () => {
 
         expect(apiClient.post).not.toHaveBeenCalled();
     });
+
+    it("shows all signup controls before interaction", () => {
+        render(
+            <MemoryRouter>
+                <SignupPage />
+            </MemoryRouter>
+        );
+
+        expect(
+            screen.getByRole("heading", { name: /sign up/i })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("textbox", { name: /username/i })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("textbox", { name: /email/i })
+        ).toBeInTheDocument();
+        expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: /^sign up$/i })
+        ).toBeEnabled();
+    });
+
+    it("shows a loading state while signup is pending", async () => {
+        const user = userEvent.setup();
+        apiClient.post.mockImplementation(() => new Promise(() => {}));
+
+        render(
+            <MemoryRouter>
+                <SignupPage />
+            </MemoryRouter>
+        );
+
+        await user.type(
+            screen.getByRole("textbox", { name: /username/i }),
+            "gariman"
+        );
+        await user.type(
+            screen.getByRole("textbox", { name: /email/i }),
+            "gariman@test.com"
+        );
+        await user.type(screen.getByLabelText(/^password$/i), "password123");
+        await user.type(
+            screen.getByLabelText(/confirm password/i),
+            "password123"
+        );
+        await user.click(
+            screen.getByRole("button", { name: /^sign up$/i })
+        );
+
+        expect(
+            screen.getByRole("button", { name: /signing up/i })
+        ).toBeDisabled();
+    });
+
+    it("shows the backend error when signup fails", async () => {
+        const user = userEvent.setup();
+        apiClient.post.mockRejectedValue({
+            response: {
+                data: {
+                    error: "Email already exists",
+                },
+            },
+        });
+
+        render(
+            <MemoryRouter>
+                <SignupPage />
+            </MemoryRouter>
+        );
+
+        await user.type(
+            screen.getByRole("textbox", { name: /username/i }),
+            "gariman"
+        );
+        await user.type(
+            screen.getByRole("textbox", { name: /email/i }),
+            "gariman@test.com"
+        );
+        await user.type(screen.getByLabelText(/^password$/i), "password123");
+        await user.type(
+            screen.getByLabelText(/confirm password/i),
+            "password123"
+        );
+        await user.click(
+            screen.getByRole("button", { name: /^sign up$/i })
+        );
+
+        expect(
+            await screen.findByText("Email already exists")
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("button", { name: /^sign up$/i })
+        ).toBeEnabled();
+    });
 });

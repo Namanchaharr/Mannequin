@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "dev": "node server.js",
-    "test": "NODE_ENV=test node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --verbose"
+    "test": "NODE_ENV=test node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --verbose",
+    "test:unit": "NODE_ENV=test node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit --runInBand",
+    "test:integration": "NODE_ENV=test node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js tests/integration --runInBand",
+    "test:coverage": "NODE_ENV=test node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit --coverage --runInBand"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -21,5 +24,22 @@
     "jest": "^30.3.0",
     "supertest": "^7.2.2",
     "vitest": "^4.1.10"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageProvider": "v8",
+    "collectCoverageFrom": [
+      "controllers/**/*.js",
+      "middlewares/**/*.js",
+      "models/**/*.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 95,
+        "functions": 95,
+        "lines": 95,
+        "statements": 95
+      }
+    }
   }
 }

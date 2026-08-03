@@ -149,7 +149,7 @@ describe("Post Model", () => {
   });
 
   describe("getPostsByUser", () => {
-    it("should return posts for a user", async () => {
+    it("should return only a user’s posts with their links attached", async () => {
       pool.query
         .mockResolvedValueOnce({
           rows: [
@@ -161,12 +161,35 @@ describe("Post Model", () => {
           ],
         })
         .mockResolvedValueOnce({
-          rows: [],
+          rows: [
+            {
+              post_id: 5,
+              text: "Portfolio",
+              url: "https://portfolio.example",
+            },
+            {
+              post_id: 99,
+              text: "Unrelated",
+              url: "https://example.com",
+            },
+          ],
         });
 
       const result = await getPostsByUser(2);
 
-      expect(result[0].user_id).toBe(2);
+      expect(result).toEqual([
+        {
+          id: 5,
+          user_id: 2,
+          caption: "post",
+          links: [
+            {
+              text: "Portfolio",
+              url: "https://portfolio.example",
+            },
+          ],
+        },
+      ]);
     });
 
     it("should return empty array", async () => {
@@ -274,6 +297,16 @@ describe("Post Model", () => {
       ]);
 
       expect(pool.query).toHaveBeenCalledTimes(2);
+      expect(pool.query).toHaveBeenNthCalledWith(
+        1,
+        expect.stringContaining("DELETE FROM post_links"),
+        [1]
+      );
+      expect(pool.query).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining("INSERT INTO post_links"),
+        [1, "GitHub", "https://github.com"]
+      );
     });
 
     it("should replace with empty links", async () => {
