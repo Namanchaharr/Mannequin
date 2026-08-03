@@ -3,7 +3,6 @@ import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
 import { resolve } from "node:path";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
@@ -14,5 +13,11 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "src"),
     },
+  },
+
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./src/vitest.setup.js",
   },
 });

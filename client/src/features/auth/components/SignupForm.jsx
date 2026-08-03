@@ -65,7 +65,6 @@ export default function SignupForm() {
             <Input
                 label="Email"
                 name="email"
-                type="email"
                 value={formData.email}
                 onChange={handleChange}
                 error={errors.email}

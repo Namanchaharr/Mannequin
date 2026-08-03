@@ -15,7 +15,6 @@ export default function useSignup() {
         try {
             setLoading(true);
 
-            // ===== CHANGED =====
             // Clear any previous backend error.
             setError("");
 
@@ -25,14 +24,12 @@ export default function useSignup() {
 
             return data;
         } catch (err) {
-            // ===== CHANGED =====
             // Store the backend error so the UI can display it.
             setError(
                 err.response?.data?.error ||
                 "Something went wrong. Please try again."
             );
 
-            // ===== CHANGED =====
             // Do not rethrow. The hook owns backend error handling.
         } finally {
             setLoading(false);
@@ -42,8 +39,6 @@ export default function useSignup() {
     return {
         signupUser,
         loading,
-
-        // ===== CHANGED =====
         error,
     };
 }
